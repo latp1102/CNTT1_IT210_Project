@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Hồ sơ cá nhân</title>
+</head>
+<body>
+<h1>Hồ sơ cá nhân</h1>
+<p th:if="${success}" th:text="${success}"></p>
+<form th:action="@{/profile}" th:object="${profileForm}" method="post">
+    <div><label>Họ tên</label><input type="text" th:field="*{fullName}"/></div>
+    <div><label>Email</label><input type="email" th:field="*{email}"/></div>
+    <div><label>Số điện thoại</label><input type="text" th:field="*{phone}"/></div>
+    <div>
+        <label>Khoa/Ngành</label>
+        <select th:field="*{departmentId}">
+            <option value="">-- Chọn --</option>
+            <option th:each="dept : ${departments}" th:value="${dept.id}" th:text="${dept.name}"></option>
+        </select>
+    </div>
+    <button type="submit">Lưu</button>
+</form>
+<p><a th:href="@{/dashboard}">Về dashboard</a></p>
+</body>
+</html>
+

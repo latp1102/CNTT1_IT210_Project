@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Đánh giá tư vấn</title>
+</head>
+<body>
+<h1>Đánh giá ca tư vấn</h1>
+<p><strong>Sinh viên:</strong> <span th:text="${session.student.profile != null ? session.student.profile.fullName : session.student.username}"></span></p>
+<p><strong>Thời gian:</strong> <span th:text="${session.sessionTime}"></span></p>
+
+<form th:action="@{'/lecturer/sessions/' + ${session.id} + '/evaluate'}" th:object="${evaluationForm}" method="post">
+    <div th:if="${#fields.hasGlobalErrors()}">
+        <p th:each="err : ${#fields.globalErrors()}" th:text="${err}"></p>
+    </div>
+    <input type="hidden" th:field="*{sessionId}"/>
+    <div>
+        <label>Nhận xét</label>
+        <textarea th:field="*{evaluationText}" rows="5" cols="60"></textarea>
+    </div>
+    <h3>Thiết bị cần cấp</h3>
+    <div>
+        <div>
+            <label>Thiết bị 1</label>
+            <select th:field="*{selections[0].equipmentId}">
+                <option value="">-- Chọn --</option>
+                <option th:each="equipment : ${equipments}" th:value="${equipment.id}" th:text="${equipment.name}"></option>
+            </select>
+            <input type="number" min="0" th:field="*{selections[0].quantity}" placeholder="Số lượng"/>
+        </div>
+        <div>
+            <label>Thiết bị 2</label>
+            <select th:field="*{selections[1].equipmentId}">
+                <option value="">-- Chọn --</option>
+                <option th:each="equipment : ${equipments}" th:value="${equipment.id}" th:text="${equipment.name}"></option>
+            </select>
+            <input type="number" min="0" th:field="*{selections[1].quantity}" placeholder="Số lượng"/>
+        </div>
+        <div>
+            <label>Thiết bị 3</label>
+            <select th:field="*{selections[2].equipmentId}">
+                <option value="">-- Chọn --</option>
+                <option th:each="equipment : ${equipments}" th:value="${equipment.id}" th:text="${equipment.name}"></option>
+            </select>
+            <input type="number" min="0" th:field="*{selections[2].quantity}" placeholder="Số lượng"/>
+        </div>
+    </div>
+    <button type="submit">Lưu đánh giá</button>
+</form>
+<p><a th:href="@{/lecturer/sessions}">Quay lại</a></p>
+</body>
+</html>
+

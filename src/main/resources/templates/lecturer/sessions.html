@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Danh sách chờ tư vấn</title>
+</head>
+<body>
+<h1>Danh sách sinh viên chờ tư vấn</h1>
+<p th:if="${success}" th:text="${success}"></p>
+<p th:if="${error}" th:text="${error}"></p>
+<table border="1" cellpadding="6">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Sinh viên</th>
+        <th>Username</th>
+        <th>Thời gian</th>
+        <th>Thao tác</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:if="${#lists.isEmpty(sessions)}">
+        <td colspan="5">Không có sinh viên nào chờ tư vấn</td>
+    </tr>
+    <tr th:each="pending : ${sessions}">
+        <td th:text="${pending.sessionId}"></td>
+        <td th:text="${pending.studentName}"></td>
+        <td th:text="${pending.studentUsername}"></td>
+        <td th:text="${#temporals.format(pending.sessionTime, 'dd-MM-yyyy HH:mm')}"></td>
+        <td>
+            <a th:href="@{/lecturer/sessions/{id}/evaluate(id=${pending.sessionId})}">Đánh giá</a>
+        </td>
+    </tr>
+    </tbody>
+</table>
+<p><a th:href="@{/dashboard}">Về dashboard</a></p>
+</body>
+</html>
+

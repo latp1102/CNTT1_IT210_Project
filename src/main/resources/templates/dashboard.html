@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard</title>
+</head>
+<body>
+<h1>Dashboard</h1>
+<p th:if="${success}" th:text="${success}"></p>
+<p>Xin chào, <strong th:text="${currentUser.profile != null ? currentUser.profile.fullName : currentUser.username}"></strong></p>
+<p>Vai trò: <strong th:text="${roleName}"></strong></p>
+<ul>
+    <li><a th:href="@{/profile}">Hồ sơ cá nhân</a></li>
+    <li><a th:href="@{/student/booking}">Đặt lịch cố vấn</a></li>
+    <li><a th:href="@{/student/history}">Lịch sử tư vấn</a></li>
+    <li><a th:href="@{/lecturer/sessions}">Danh sách chờ tư vấn (Giảng viên)</a></li>
+    <li><a th:href="@{/admin/equipments}">Quản lý thiết bị (Admin)</a></li>
+    <li><a th:href="@{/admin/inventory}">Xuất kho (Admin)</a></li>
+</ul>
+<form th:action="@{/logout}" method="post">
+    <button type="submit">Đăng xuất</button>
+</form>
+</body>
+</html>
+

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Lịch sử tư vấn</title>
+</head>
+<body>
+<h1>Lịch sử tư vấn</h1>
+<p th:if="${success}" th:text="${success}"></p>
+<p th:if="${error}" th:text="${error}"></p>
+<table border="1" cellpadding="6">
+    <thead>
+    <tr>
+        <th>Thời gian</th>
+        <th>Giảng viên</th>
+        <th>Trạng thái</th>
+        <th>Đánh giá</th>
+        <th>Thiết bị mượn</th>
+        <th>Hủy</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="item : ${history}">
+        <td th:text="${item.sessionTime}"></td>
+        <td th:text="${item.lecturerName}"></td>
+        <td th:text="${item.sessionStatus}"></td>
+        <td th:text="${item.evaluationText}"></td>
+        <td>
+            <ul>
+                <li th:each="detail : ${item.borrowedItems}" th:text="${detail.equipmentName + ' x ' + detail.quantity}"></li>
+            </ul>
+        </td>
+        <td>
+            <form th:if="${item.sessionStatus.name() == 'PENDING' or item.sessionStatus.name() == 'CONFIRMED'}"
+                  th:action="@{'/student/sessions/' + ${item.sessionId} + '/cancel'}" method="post">
+                <button type="submit">Hủy lịch</button>
+            </form>
+        </td>
+    </tr>
+    </tbody>
+</table>
+<p><a th:href="@{/student/booking}">Đặt lịch mới</a></p>
+<p><a th:href="@{/dashboard}">Về dashboard</a></p>
+</body>
+</html>
+

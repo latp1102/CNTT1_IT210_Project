@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Đặt lịch cố vấn</title>
+</head>
+<body>
+<h1>Đặt lịch cố vấn</h1>
+
+<form th:action="@{/student/booking}" th:object="${bookingForm}" method="post">
+    <div th:if="${#fields.hasGlobalErrors()}">
+        <p th:each="err : ${#fields.globalErrors()}" th:text="${err}"></p>
+    </div>
+    <div>
+        <label>Khoa/Ngành</label>
+        <select name="departmentId" onchange="window.location.href='/student/booking?departmentId=' + this.value">
+            <option value="">-- Chọn khoa/ngành --</option>
+            <option th:each="dept : ${departments}" th:value="${dept.id}" th:text="${dept.name}" th:selected="${selectedDepartmentId != null and selectedDepartmentId == dept.id}"></option>
+        </select>
+    </div>
+    <div>
+        <label>Giảng viên</label>
+        <select th:field="*{lecturerId}">
+            <option value="">-- Chọn giảng viên --</option>
+            <option th:each="lec : ${lecturers}" th:value="${lec.id}" th:text="${lec.fullName + ' (' + lec.departmentName + ')' }"></option>
+        </select>
+    </div>
+    <div>
+        <label>Ngày</label>
+        <input type="date" th:field="*{sessionDate}"/>
+    </div>
+    <div>
+        <label>Giờ</label>
+        <input type="time" th:field="*{sessionTime}"/>
+    </div>
+    <button type="submit">Đặt lịch</button>
+</form>
+<p><a th:href="@{/student/history}">Xem lịch sử</a></p>
+<p><a th:href="@{/dashboard}">Về dashboard</a></p>
+</body>
+</html>
+

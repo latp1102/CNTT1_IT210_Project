@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Xuất kho</title>
+</head>
+<body>
+<h1>Phiếu chờ cấp phát</h1>
+<p th:if="${success}" th:text="${success}"></p>
+<p th:if="${error}" th:text="${error}"></p>
+<table border="1" cellpadding="6">
+    <thead>
+    <tr>
+        <th>ID phiếu</th>
+        <th>Lịch hẹn</th>
+        <th>Sinh viên</th>
+        <th>Thiết bị</th>
+        <th>Thao tác</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="record : ${records}">
+        <td th:text="${record.id}"></td>
+        <td th:text="${record.session != null ? record.session.sessionTime : ''}"></td>
+        <td th:text="${record.session != null && record.session.student != null && record.session.student.profile != null ? record.session.student.profile.fullName : ''}"></td>
+        <td>
+            <ul>
+                <li th:each="detail : ${record.details}">
+                    <span th:text="${detail.equipment != null ? detail.equipment.name : ''}"></span>
+                    <span> x </span>
+                    <span th:text="${detail.quantity}"></span>
+                </li>
+            </ul>
+        </td>
+        <td>
+            <form th:action="@{'/admin/inventory/' + ${record.id} + '/confirm'}" method="post">
+                <button type="submit">Xác nhận xuất kho</button>
+            </form>
+        </td>
+    </tr>
+    </tbody>
+</table>
+<p><a th:href="@{/dashboard}">Về dashboard</a></p>
+</body>
+</html>
+

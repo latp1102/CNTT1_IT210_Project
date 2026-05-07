@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Lỗi</title>
+</head>
+<body>
+<h1>Đã xảy ra lỗi</h1>
+<p>Mã lỗi: <span th:text="${status}">500</span></p>
+<p th:text="${message}">Lỗi hệ thống</p>
+<p><a th:href="@{/dashboard}">Quay lại dashboard</a></p>
+</body>
+</html>
+

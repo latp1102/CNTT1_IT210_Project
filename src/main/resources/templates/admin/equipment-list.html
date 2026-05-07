@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Quản lý thiết bị</title>
+</head>
+<body>
+<h1>Quản lý thiết bị</h1>
+<p th:if="${success}" th:text="${success}"></p>
+<p th:if="${error}" th:text="${error}"></p>
+<p><a th:href="@{/admin/equipments/new}">Thêm thiết bị</a></p>
+<table border="1" cellpadding="6">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Tên</th>
+        <th>Số lượng</th>
+        <th>Mô tả</th>
+        <th>Thao tác</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="equipment : ${equipments}">
+        <td th:text="${equipment.id}"></td>
+        <td th:text="${equipment.name}"></td>
+        <td th:text="${equipment.quantity}"></td>
+        <td th:text="${equipment.description}"></td>
+        <td>
+            <a th:href="@{'/admin/equipments/' + ${equipment.id} + '/edit'}">Sửa</a>
+            <form th:action="@{'/admin/equipments/' + ${equipment.id} + '/delete'}" method="post" style="display:inline">
+                <button type="submit">Xóa</button>
+            </form>
+        </td>
+    </tr>
+    </tbody>
+</table>
+<p><a th:href="@{/dashboard}">Về dashboard</a></p>
+</body>
+</html>
+
