@@ -22,4 +22,3 @@ public class EvaluationForm {
 
     private List<EquipmentSelectionForm> selections = new ArrayList<>();
 }
-

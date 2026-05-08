@@ -22,6 +22,9 @@ public interface MentoringSessionRepository extends JpaRepository<MentoringSessi
     @EntityGraph(attributePaths = {"lecturer", "lecturer.department", "lecturer.profile", "student", "student.department", "student.profile"})
     Optional<MentoringSession> findByIdAndStudentId(Long id, Long studentId);
 
+    @EntityGraph(attributePaths = {"lecturer", "lecturer.department", "lecturer.profile", "student", "student.department", "student.profile"})
+    Optional<MentoringSession> findByIdAndLecturerId(Long id, Long lecturerId);
+
     @Query("""
             select case when count(ms) > 0 then true else false end
             from MentoringSession ms

@@ -7,7 +7,6 @@ import org.example.projects.dto.RegistrationForm;
 import org.example.projects.exception.BusinessException;
 import org.example.projects.service.LookupService;
 import org.example.projects.service.UserService;
-import org.example.projects.validation.LoginFormValidator;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -20,9 +19,7 @@ import org.springframework.security.web.context.HttpSessionSecurityContextReposi
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -38,12 +35,6 @@ public class AuthController {
     private final UserService userService;
     private final LookupService lookupService;
     private final AuthenticationConfiguration authenticationConfiguration;
-    private final LoginFormValidator loginFormValidator;
-
-    @InitBinder("loginForm")
-    protected void initBinder(WebDataBinder binder) {
-        binder.addValidators(loginFormValidator);
-    }
 
     @GetMapping("/login")
     public String login(Model model) {
@@ -74,7 +65,7 @@ public class AuthController {
                     .setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, context);
 
             redirectAttributes.addFlashAttribute("success", "Đăng nhập thành công.");
-            return "redirect:/dashboard";
+            return "redirect:" + getLandingPage(authentication);
         } catch (BadCredentialsException ex) {
             bindingResult.reject("loginError", "Sai tên đăng nhập hoặc mật khẩu");
             return "login";
@@ -82,6 +73,21 @@ public class AuthController {
             bindingResult.reject("loginError", "Không thể đăng nhập lúc này");
             return "login";
         }
+    }
+
+    private String getLandingPage(Authentication authentication) {
+        return authentication.getAuthorities().stream()
+                .map(grantedAuthority -> grantedAuthority.getAuthority())
+                .filter(authority -> authority != null && authority.startsWith("ROLE_"))
+                .map(authority -> authority.substring("ROLE_".length()))
+                .findFirst()
+                .map(role -> switch (role) {
+                    case "STUDENT" -> "/";
+                    case "LECTURER" -> "/lecturer/sessions";
+                    case "ADMIN" -> "/admin/equipments";
+                    default -> "/dashboard";
+                })
+                .orElse("/dashboard");
     }
 
     @GetMapping("/register")

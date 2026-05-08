@@ -2,45 +2,117 @@
 <html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Lịch sử tư vấn</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lịch sử tư vấn - Hệ thống Tư vấn Học thuật</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+    <style>
+        .status-badge {
+            font-size: 0.85rem;
+        }
+    </style>
 </head>
-<body>
-<h1>Lịch sử tư vấn</h1>
-<p th:if="${success}" th:text="${success}"></p>
-<p th:if="${error}" th:text="${error}"></p>
-<table border="1" cellpadding="6">
-    <thead>
-    <tr>
-        <th>Thời gian</th>
-        <th>Giảng viên</th>
-        <th>Trạng thái</th>
-        <th>Đánh giá</th>
-        <th>Thiết bị mượn</th>
-        <th>Hủy</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="item : ${history}">
-        <td th:text="${item.sessionTime}"></td>
-        <td th:text="${item.lecturerName}"></td>
-        <td th:text="${item.sessionStatus}"></td>
-        <td th:text="${item.evaluationText}"></td>
-        <td>
-            <ul>
-                <li th:each="detail : ${item.borrowedItems}" th:text="${detail.equipmentName + ' x ' + detail.quantity}"></li>
-            </ul>
-        </td>
-        <td>
-            <form th:if="${item.sessionStatus.name() == 'PENDING' or item.sessionStatus.name() == 'CONFIRMED'}"
-                  th:action="@{'/student/sessions/' + ${item.sessionId} + '/cancel'}" method="post">
-                <button type="submit">Hủy lịch</button>
-            </form>
-        </td>
-    </tr>
-    </tbody>
-</table>
-<p><a th:href="@{/student/booking}">Đặt lịch mới</a></p>
-<p><a th:href="@{/dashboard}">Về dashboard</a></p>
+<body class="bg-light">
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="mb-0">
+            <i class="bi bi-clock-history me-2"></i>Lịch sử tư vấn
+        </h1>
+        <a th:href="@{/student/booking}" class="btn btn-primary">
+            <i class="bi bi-calendar-plus me-2"></i>Đặt lịch mới
+        </a>
+    </div>
+
+    <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="bi bi-check-circle me-2"></i>
+        <span th:text="${success}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-circle me-2"></i>
+        <span th:text="${error}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <div th:if="${#lists.isEmpty(history)}" class="alert alert-info">
+        <i class="bi bi-inbox me-2"></i>
+        Bạn chưa có lịch sử tư vấn nào.
+    </div>
+
+    <div th:each="item : ${history}" class="card shadow-sm mb-4">
+        <div class="card-body">
+            <div class="row align-items-start">
+                <div class="col-md-4">
+                    <p class="text-muted mb-1 small">
+                        <i class="bi bi-calendar-event me-1"></i>Thời gian:
+                    </p>
+                    <h5 class="mb-3" th:text="${item.sessionTime}"></h5>
+
+                    <p class="text-muted mb-1 small">
+                        <i class="bi bi-person-workspace me-1"></i>Giảng viên:
+                    </p>
+                    <h5 class="mb-3" th:text="${item.lecturerName}"></h5>
+                </div>
+
+                <div class="col-md-4">
+                    <p class="text-muted mb-1 small">
+                        <i class="bi bi-info-circle me-1"></i>Trạng thái:
+                    </p>
+                    <div class="mb-3">
+                        <span class="badge status-badge"
+                              th:classappend="${item.sessionStatus.name() == 'PENDING' ? 'bg-warning' : (item.sessionStatus.name() == 'CONFIRMED' ? 'bg-success' : (item.sessionStatus.name() == 'COMPLETED' ? 'bg-primary' : 'bg-danger'))}"
+                              th:text="${item.sessionStatus.name()}"></span>
+                    </div>
+
+                    <p class="text-muted mb-1 small">
+                        <i class="bi bi-chat-dots me-1"></i>Đánh giá:
+                    </p>
+                    <p class="mb-0">
+                        <small th:text="${item.evaluationText != null ? item.evaluationText : 'Chưa có'}"></small>
+                    </p>
+                </div>
+
+                <div class="col-md-4">
+                    <p class="text-muted mb-1 small">
+                        <i class="bi bi-box me-1"></i>Thiết bị mượn:
+                    </p>
+                    <div th:if="${#lists.isEmpty(item.borrowedItems)}" class="text-muted small">
+                        Không có thiết bị nào
+                    </div>
+                    <ul class="list-unstyled" th:unless="${#lists.isEmpty(item.borrowedItems)}">
+                        <li th:each="detail : ${item.borrowedItems}" class="small">
+                            <i class="bi bi-check2 me-1 text-success"></i>
+                            <span th:text="${detail.equipmentName + ' x ' + detail.quantity}"></span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="border-top pt-3 mt-3">
+                <div th:if="${item.sessionStatus.name() == 'PENDING' or item.sessionStatus.name() == 'CONFIRMED'}">
+                    <form th:action="@{'/student/sessions/' + ${item.sessionId} + '/cancel'}" method="post" style="display:inline" onsubmit="return confirm('Bạn có chắc muốn hủy lịch tư vấn này?')">
+                        <button type="submit" class="btn btn-sm btn-danger">
+                            <i class="bi bi-x-circle me-1"></i>Hủy lịch
+                        </button>
+                    </form>
+                </div>
+                <div th:unless="${item.sessionStatus.name() == 'PENDING' or item.sessionStatus.name() == 'CONFIRMED'}" class="text-muted small">
+                    <i class="bi bi-lock me-1"></i>Không thể hủy lịch ở trạng thái này
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <a th:href="@{/dashboard}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-2"></i>Về dashboard
+        </a>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
 

@@ -1,5 +1,6 @@
 package org.example.projects.controller;
 
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 import org.example.projects.dto.EvaluationForm;
@@ -36,40 +37,118 @@ public class LecturerController {
 
     @GetMapping("/sessions")
     public String pendingSessions(@AuthenticationPrincipal CurrentUserDetails principal, Model model) {
-        java.util.List<PendingSessionDto> sessions = mentoringSessionService.getPendingSessionsForLecturer(principal.getId());
+        java.util.List<PendingSessionDto> sessions = mentoringSessionService
+                .getPendingSessionsForLecturer(principal.getId());
         model.addAttribute("sessions", sessions == null ? new ArrayList<>() : sessions);
         return "lecturer/sessions";
     }
 
+    @GetMapping("/sessions/confirmed")
+    public String confirmedSessions(@AuthenticationPrincipal CurrentUserDetails principal, Model model) {
+        java.util.List<PendingSessionDto> confirmed = mentoringSessionService.getConfirmedSessionsForLecturer(principal.getId());
+        model.addAttribute("confirmedSessions", confirmed == null ? new ArrayList<>() : confirmed);
+        return "lecturer/confirmed-sessions";
+    }
+
     @GetMapping("/sessions/{sessionId}/evaluate")
     public String evaluateForm(@AuthenticationPrincipal CurrentUserDetails principal,
-                               @PathVariable Long sessionId,
-                               Model model) {
-        MentoringSession session = mentoringSessionService.getPendingSessionForLecturer(principal.getId(), sessionId);
-        EvaluationForm form = new EvaluationForm();
-        form.setSessionId(session.getId());
-        form.getSelections().add(new EquipmentSelectionForm());
-        form.getSelections().add(new EquipmentSelectionForm());
-        form.getSelections().add(new EquipmentSelectionForm());
-        model.addAttribute("session", session);
-        model.addAttribute("evaluationForm", form);
-        model.addAttribute("equipments", equipmentService.findAll());
-        return "lecturer/evaluate-form";
+            @PathVariable("sessionId") Long sessionId,
+            Model model) {
+        try {
+            MentoringSession session = mentoringSessionService.getPendingSessionForLecturer(principal.getId(),
+                    sessionId);
+
+            // only allow evaluation for sessions that have been confirmed by lecturer
+            if (session.getStatus() != org.example.projects.entity.MentoringSessionStatus.CONFIRMED) {
+                // redirect back with message
+                model.addAttribute("error", "Phiên tư vấn chưa được duyệt, không thể đánh giá");
+                return "redirect:/lecturer/sessions";
+            }
+
+            // Tính tên sinh viên để hiển thị
+            String studentName = "Không xác định";
+            if (session.getStudent() != null) {
+                org.example.projects.entity.UserProfile profile = session.getStudent().getProfile();
+                if (profile != null && profile.getFullName() != null && !profile.getFullName().isBlank()) {
+                    studentName = profile.getFullName();
+                } else {
+                    studentName = session.getStudent().getUsername();
+                }
+            }
+
+            // Format thời gian
+            String sessionTimeDisplay = "Không có thời gian";
+            if (session.getSessionTime() != null) {
+                sessionTimeDisplay = session.getSessionTime().format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm"));
+            }
+
+            EvaluationForm form = new EvaluationForm();
+            form.setSessionId(session.getId());
+            form.getSelections().add(new EquipmentSelectionForm());
+            form.getSelections().add(new EquipmentSelectionForm());
+            form.getSelections().add(new EquipmentSelectionForm());
+
+            model.addAttribute("session", session);
+            model.addAttribute("sessionStudentName", studentName);
+            model.addAttribute("sessionTimeDisplay", sessionTimeDisplay);
+            model.addAttribute("evaluationForm", form);
+            model.addAttribute("equipments", equipmentService.findAll());
+            return "lecturer/evaluate-form";
+        } catch (Exception e) {
+            model.addAttribute("error", "Không thể tải form đánh giá: " + e.getMessage());
+            return "redirect:/lecturer/sessions";
+        }
+    }
+
+    @PostMapping("/sessions/{sessionId}/confirm")
+    public String confirmSession(@AuthenticationPrincipal CurrentUserDetails principal,
+                                 @PathVariable("sessionId") Long sessionId,
+                                 RedirectAttributes redirectAttributes) {
+        try {
+            mentoringSessionService.confirmSession(principal.getId(), sessionId);
+            redirectAttributes.addFlashAttribute("success", "Đã duyệt lịch tư vấn");
+        } catch (BusinessException ex) {
+            redirectAttributes.addFlashAttribute("error", ex.getMessage());
+        }
+        return "redirect:/lecturer/sessions";
     }
 
     @PostMapping("/sessions/{sessionId}/evaluate")
     public String evaluate(@AuthenticationPrincipal CurrentUserDetails principal,
-                           @PathVariable Long sessionId,
-                           @Valid @ModelAttribute("evaluationForm") EvaluationForm form,
-                           BindingResult bindingResult,
-                           Model model,
-                           RedirectAttributes redirectAttributes) {
+            @PathVariable Long sessionId,
+            @Valid @ModelAttribute("evaluationForm") EvaluationForm form,
+            BindingResult bindingResult,
+            Model model,
+            RedirectAttributes redirectAttributes) {
         form.setSessionId(sessionId);
         if (bindingResult.hasErrors()) {
             try {
-                model.addAttribute("session", mentoringSessionService.getPendingSessionForLecturer(principal.getId(), sessionId));
+                MentoringSession session = mentoringSessionService.getPendingSessionForLecturer(principal.getId(),
+                        sessionId);
+
+                // Tính tên sinh viên để hiển thị
+                String studentName = "Không xác định";
+                if (session.getStudent() != null) {
+                    org.example.projects.entity.UserProfile profile = session.getStudent().getProfile();
+                    if (profile != null && profile.getFullName() != null && !profile.getFullName().isBlank()) {
+                        studentName = profile.getFullName();
+                    } else {
+                        studentName = session.getStudent().getUsername();
+                    }
+                }
+
+                // Format thời gian
+                String sessionTimeDisplay = "Không có thời gian";
+                if (session.getSessionTime() != null) {
+                    sessionTimeDisplay = session.getSessionTime()
+                            .format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm"));
+                }
+
+                model.addAttribute("session", session);
+                model.addAttribute("sessionStudentName", studentName);
+                model.addAttribute("sessionTimeDisplay", sessionTimeDisplay);
                 model.addAttribute("equipments", equipmentService.findAll());
-            } catch (BusinessException ex) {
+            } catch (Exception ex) {
                 redirectAttributes.addFlashAttribute("error", ex.getMessage());
                 return "redirect:/lecturer/sessions";
             }
@@ -79,11 +158,34 @@ public class LecturerController {
             evaluationService.evaluateSession(principal.getId(), form);
             redirectAttributes.addFlashAttribute("success", "Đánh giá và tạo phiếu mượn thành công");
             return "redirect:/lecturer/sessions";
-        } catch (BusinessException ex) {
+        } catch (org.example.projects.exception.BusinessException ex) {
             try {
-                model.addAttribute("session", mentoringSessionService.getPendingSessionForLecturer(principal.getId(), sessionId));
+                MentoringSession session = mentoringSessionService.getPendingSessionForLecturer(principal.getId(),
+                        sessionId);
+
+                // Tính tên sinh viên để hiển thị
+                String studentName = "Không xác định";
+                if (session.getStudent() != null) {
+                    org.example.projects.entity.UserProfile profile = session.getStudent().getProfile();
+                    if (profile != null && profile.getFullName() != null && !profile.getFullName().isBlank()) {
+                        studentName = profile.getFullName();
+                    } else {
+                        studentName = session.getStudent().getUsername();
+                    }
+                }
+
+                // Format thời gian
+                String sessionTimeDisplay = "Không có thời gian";
+                if (session.getSessionTime() != null) {
+                    sessionTimeDisplay = session.getSessionTime()
+                            .format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm"));
+                }
+
+                model.addAttribute("session", session);
+                model.addAttribute("sessionStudentName", studentName);
+                model.addAttribute("sessionTimeDisplay", sessionTimeDisplay);
                 model.addAttribute("equipments", equipmentService.findAll());
-            } catch (BusinessException ignored) {
+            } catch (Exception ignored) {
                 // no-op
             }
             bindingResult.reject("evaluationError", ex.getMessage());
@@ -91,4 +193,3 @@ public class LecturerController {
         }
     }
 }
-

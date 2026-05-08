@@ -152,12 +152,38 @@ public class MentoringSessionService {
     }
 
     @Transactional(readOnly = true)
-    public MentoringSession getPendingSessionForLecturer(Long lecturerId, Long sessionId) {
-        MentoringSession session = sessionRepository.findById(sessionId)
-                .orElseThrow(() -> new BusinessException("Không tìm thấy lịch hẹn"));
-        if (session.getLecturer() == null || !lecturerId.equals(session.getLecturer().getId())) {
-            throw new BusinessException("Bạn không có quyền xử lý lịch hẹn này");
+    public List<PendingSessionDto> getConfirmedSessionsForLecturer(Long lecturerId) {
+        List<MentoringSession> sessions = sessionRepository.findByLecturerIdAndStatusOrderBySessionTimeAsc(
+                lecturerId, MentoringSessionStatus.CONFIRMED);
+        List<PendingSessionDto> result = new ArrayList<>();
+        for (MentoringSession session : sessions) {
+            UserAccount student = session.getStudent();
+            result.add(new PendingSessionDto(
+                    session.getId(),
+                    resolveFullName(student),
+                    student.getUsername(),
+                    resolveFullName(session.getLecturer()),
+                    session.getSessionTime(),
+                    session.getStatus()));
         }
+        return result;
+    }
+
+    @Transactional
+    public void confirmSession(Long lecturerId, Long sessionId) {
+        MentoringSession session = sessionRepository.findByIdAndLecturerId(sessionId, lecturerId)
+                .orElseThrow(() -> new BusinessException("Không tìm thấy lịch hẹn"));
+        if (session.getStatus() != MentoringSessionStatus.PENDING) {
+            throw new BusinessException("Chỉ có lịch đang chờ mới được duyệt");
+        }
+        session.setStatus(MentoringSessionStatus.CONFIRMED);
+        sessionRepository.save(session);
+    }
+
+    @Transactional(readOnly = true)
+    public MentoringSession getPendingSessionForLecturer(Long lecturerId, Long sessionId) {
+        MentoringSession session = sessionRepository.findByIdAndLecturerId(sessionId, lecturerId)
+                .orElseThrow(() -> new BusinessException("Không tìm thấy lịch hẹn"));
         return session;
     }
 

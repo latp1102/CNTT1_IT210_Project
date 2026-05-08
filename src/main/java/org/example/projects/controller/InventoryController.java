@@ -1,6 +1,5 @@
 package org.example.projects.controller;
 
-import org.example.projects.entity.BorrowingRecord;
 import org.example.projects.exception.BusinessException;
 import org.example.projects.service.InventoryService;
 import org.springframework.stereotype.Controller;

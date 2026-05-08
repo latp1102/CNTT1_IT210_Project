@@ -3,21 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quản lý thiết bị - Hệ thống Tư vấn Học thuật</title>
+    <title>Danh sách đã duyệt - Hệ thống Tư vấn Học thuật</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <link th:href="@{/css/style.css}" rel="stylesheet">
 </head>
 <body class="bg-light">
+
 <div class="container py-5">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="mb-0">
-            <i class="bi bi-tools me-2"></i>Quản lý thiết bị
-        </h1>
-        <a th:href="@{/admin/equipments/new}" class="btn btn-primary">
-            <i class="bi bi-plus-circle me-2"></i>Thêm thiết bị
-        </a>
-    </div>
+
+    <h1 class="mb-4">
+        <i class="bi bi-people me-2"></i>Danh sách đã duyệt
+    </h1>
 
     <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
         <i class="bi bi-check-circle me-2"></i>
@@ -37,29 +34,34 @@
                 <thead class="table-light">
                     <tr>
                         <th><i class="bi bi-hash me-2"></i>ID</th>
-                        <th><i class="bi bi-box me-2"></i>Tên thiết bị</th>
-                        <th><i class="bi bi-stack me-2"></i>Số lượng</th>
-                        <th><i class="bi bi-file-text me-2"></i>Mô tả</th>
+                        <th><i class="bi bi-person me-2"></i>Sinh viên</th>
+                        <th><i class="bi bi-person-circle me-2"></i>Username</th>
+                        <th><i class="bi bi-calendar-event me-2"></i>Thời gian</th>
                         <th class="text-center"><i class="bi bi-gear me-2"></i>Thao tác</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr th:each="equipment : ${equipments}">
-                        <td><span class="badge bg-secondary" th:text="${equipment.id}"></span></td>
-                        <td><strong th:text="${equipment.name}"></strong></td>
-                        <td>
-                            <span class="badge bg-info" th:text="${equipment.quantity}"></span>
+                    <tr th:if="${#lists.isEmpty(confirmedSessions)}">
+                        <td colspan="5" class="text-center text-muted py-4">
+                            <i class="bi bi-inbox me-2"></i>Không có lịch đã duyệt
                         </td>
-                        <td th:text="${equipment.description}"></td>
+                    </tr>
+                    <tr th:each="pending : ${confirmedSessions}">
+                        <td>
+                            <span class="badge bg-secondary" th:text="${pending.sessionId}"></span>
+                        </td>
+                        <td>
+                            <strong th:text="${pending.studentName}"></strong>
+                        </td>
+                        <td th:text="${pending.studentUsername}"></td>
+                        <td>
+                            <i class="bi bi-calendar me-1"></i>
+                            <span th:text="${#temporals.format(pending.sessionTime, 'dd-MM-yyyy HH:mm')}"></span>
+                        </td>
                         <td class="text-center">
-                            <a th:href="@{'/admin/equipments/' + ${equipment.id} + '/edit'}" class="btn btn-sm btn-warning">
-                                <i class="bi bi-pencil me-1"></i>Sửa
+                            <a th:href="@{/lecturer/sessions/{id}/evaluate(id=${pending.sessionId})}" class="btn btn-sm btn-primary">
+                                <i class="bi bi-pencil me-1"></i>Đánh giá
                             </a>
-                            <form th:action="@{'/admin/equipments/' + ${equipment.id} + '/delete'}" method="post" style="display:inline" onsubmit="return confirm('Bạn có chắc muốn xóa?')">
-                                <button type="submit" class="btn btn-sm btn-danger">
-                                    <i class="bi bi-trash me-1"></i>Xóa
-                                </button>
-                            </form>
                         </td>
                     </tr>
                 </tbody>
@@ -68,8 +70,8 @@
     </div>
 
     <div class="mt-4">
-        <a th:href="@{/dashboard}" class="btn btn-outline-secondary">
-            <i class="bi bi-arrow-left me-2"></i>Về dashboard
+        <a th:href="@{/lecturer/sessions}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-2"></i>Về danh sách chờ
         </a>
     </div>
 </div>
