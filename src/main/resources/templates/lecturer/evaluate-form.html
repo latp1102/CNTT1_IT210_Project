@@ -25,7 +25,7 @@
 
       <form
         method="post"
-        th:action="@{/lecturer/sessions/{id}/evaluate(id=${session.id})}"
+        th:action="@{/lecturer/sessions/{id}/evaluate(id=${evaluationForm.sessionId})}"
         th:object="${evaluationForm}"
       >
         <input
@@ -34,6 +34,10 @@
           th:value="${_csrf.token}"
         />
         <input type="hidden" th:field="*{sessionId}" />
+
+        <div class="alert alert-danger" th:if="${#fields.hasGlobalErrors()}">
+          <div th:each="err : ${#fields.globalErrors()}" th:text="${err}"></div>
+        </div>
 
         <div class="mb-3">
           <label for="evaluationText" class="form-label">Nhận xét</label>

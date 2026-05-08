@@ -95,7 +95,11 @@ create table mentoring_sessions(
 
 insert into mentoring_sessions(student_id,lecturer_id,session_time,status) values
 (4,2,'2026-06-10 09:00:00','PENDING'),
-(5,3,'2026-06-11 14:00:00','PENDING');
+(5,3,'2026-06-11 14:00:00','PENDING'),
+(4,2,'2026-06-12 10:00:00','CONFIRMED'),
+(5,3,'2026-06-13 15:00:00','CONFIRMED'),
+(4,2,'2026-06-05 08:00:00','COMPLETED'),
+(5,3,'2026-06-06 14:00:00','COMPLETED');
 
 
 create table academic_evaluations(
@@ -106,6 +110,10 @@ create table academic_evaluations(
     foreign key (session_id) references mentoring_sessions(id)
 );
 
+insert into academic_evaluations(session_id,evaluation_text) values
+(5,'Sinh viên làm bài tập khá tốt, nắm vững kiến thức cơ bản'),
+(6,'Sinh viên cần ôn tập thêm về các khái niệm nâng cao');
+
 
 create table borrowing_records(
     id bigint primary key auto_increment,
@@ -114,6 +122,10 @@ create table borrowing_records(
 
     foreign key (session_id) references mentoring_sessions(id)
 );
+
+insert into borrowing_records(session_id,status) values
+(5,'PENDING_ISSUE'),
+(6,'PENDING_ISSUE');
 
 
 create table borrowing_details(
@@ -125,3 +137,10 @@ create table borrowing_details(
     foreign key (record_id) references borrowing_records(id),
     foreign key (equipment_id) references equipments(id)
 );
+
+insert into borrowing_details(record_id,equipment_id,quantity) values
+(1,1,2),
+(1,2,1),
+(2,3,1),
+(2,4,1);
+

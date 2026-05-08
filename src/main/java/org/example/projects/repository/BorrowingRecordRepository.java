@@ -12,7 +12,8 @@ public interface BorrowingRecordRepository extends JpaRepository<BorrowingRecord
 
     Optional<BorrowingRecord> findBySessionId(Long sessionId);
 
-    @EntityGraph(attributePaths = {"session", "details", "details.equipment"})
+//    @EntityGraph(attributePaths = {"session", "details", "details.equipment"})
+@EntityGraph(attributePaths = {"session", "session.student", "session.student.profile", "details", "details.equipment"})
     List<BorrowingRecord> findByStatus(BorrowingRecordStatus status);
 }
 

@@ -88,7 +88,7 @@ public class LecturerController {
             form.getSelections().add(new EquipmentSelectionForm());
             form.getSelections().add(new EquipmentSelectionForm());
 
-            model.addAttribute("session", session);
+            model.addAttribute("mentoringSession", session);
             model.addAttribute("sessionStudentName", studentName);
             model.addAttribute("sessionTimeDisplay", sessionTimeDisplay);
             model.addAttribute("evaluationForm", form);
@@ -144,7 +144,7 @@ public class LecturerController {
                             .format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm"));
                 }
 
-                model.addAttribute("session", session);
+                model.addAttribute("mentoringSession", session);
                 model.addAttribute("sessionStudentName", studentName);
                 model.addAttribute("sessionTimeDisplay", sessionTimeDisplay);
                 model.addAttribute("equipments", equipmentService.findAll());
@@ -181,7 +181,7 @@ public class LecturerController {
                             .format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm"));
                 }
 
-                model.addAttribute("session", session);
+                model.addAttribute("mentoringSession", session);
                 model.addAttribute("sessionStudentName", studentName);
                 model.addAttribute("sessionTimeDisplay", sessionTimeDisplay);
                 model.addAttribute("equipments", equipmentService.findAll());
