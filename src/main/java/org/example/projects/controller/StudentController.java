@@ -4,7 +4,9 @@ import java.util.ArrayList;
 
 import org.example.projects.dto.BookingForm;
 import org.example.projects.dto.SessionHistoryDto;
+import org.example.projects.entity.UserAccount;
 import org.example.projects.exception.BusinessException;
+import org.example.projects.repository.UserRepository;
 import org.example.projects.security.CurrentUserDetails;
 import org.example.projects.service.LookupService;
 import org.example.projects.service.MentoringSessionService;
@@ -29,6 +31,15 @@ public class StudentController {
 
     private final MentoringSessionService mentoringSessionService;
     private final LookupService lookupService;
+    private final UserRepository userRepository;
+
+    @GetMapping("/home")
+    public String home(@AuthenticationPrincipal CurrentUserDetails principal, Model model) {
+        UserAccount user = userRepository.findWithDepartmentAndProfileByUsername(principal.getUsername())
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy người dùng"));
+        model.addAttribute("currentUser", user);
+        return "student/home";
+    }
 
     @GetMapping("/booking")
     public String bookingForm(@AuthenticationPrincipal CurrentUserDetails principal,

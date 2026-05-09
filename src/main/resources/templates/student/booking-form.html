@@ -54,7 +54,7 @@
                             <label for="sessionDate" class="form-label">
                                 <i class="bi bi-calendar me-1"></i>Ngày
                             </label>
-                            <input type="date" class="form-control" th:field="*{sessionDate}" id="sessionDate" />
+                            <input type="date" class="form-control" th:field="*{sessionDate}" id="sessionDate" placeholder="dd/MM/yyyy" />
                             <div class="text-danger mt-1 small" th:if="${#fields.hasErrors('sessionDate')}" th:errors="*{sessionDate}"></div>
                         </div>
 
@@ -73,8 +73,8 @@
                             <a th:href="@{/student/history}" class="btn btn-secondary">
                                 <i class="bi bi-clock-history me-2"></i>Xem lịch sử
                             </a>
-                            <a th:href="@{/dashboard}" class="btn btn-outline-secondary">
-                                <i class="bi bi-arrow-left me-2"></i>Dashboard
+                            <a th:href="@{/student/home}" class="btn btn-outline-secondary">
+                                <i class="bi bi-arrow-left me-2"></i>Trang sinh vien
                             </a>
                         </div>
                     </form>

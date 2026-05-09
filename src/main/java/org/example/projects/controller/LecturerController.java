@@ -7,7 +7,9 @@ import org.example.projects.dto.EvaluationForm;
 import org.example.projects.dto.EquipmentSelectionForm;
 import org.example.projects.dto.PendingSessionDto;
 import org.example.projects.entity.MentoringSession;
+import org.example.projects.entity.UserAccount;
 import org.example.projects.exception.BusinessException;
+import org.example.projects.repository.UserRepository;
 import org.example.projects.security.CurrentUserDetails;
 import org.example.projects.service.EquipmentService;
 import org.example.projects.service.EvaluationService;
@@ -34,6 +36,15 @@ public class LecturerController {
     private final MentoringSessionService mentoringSessionService;
     private final EvaluationService evaluationService;
     private final EquipmentService equipmentService;
+    private final UserRepository userRepository;
+
+    @GetMapping("/home")
+    public String home(@AuthenticationPrincipal CurrentUserDetails principal, Model model) {
+        UserAccount user = userRepository.findWithDepartmentAndProfileByUsername(principal.getUsername())
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy người dùng"));
+        model.addAttribute("currentUser", user);
+        return "lecturer/home";
+    }
 
     @GetMapping("/sessions")
     public String pendingSessions(@AuthenticationPrincipal CurrentUserDetails principal, Model model) {

@@ -16,7 +16,21 @@ public class DashboardController {
 
     private final UserRepository userRepository;
 
-    @GetMapping({"/", "/dashboard"})
+    @GetMapping("/")
+    public String homeRedirect(@AuthenticationPrincipal CurrentUserDetails principal) {
+        if (principal == null) {
+            return "redirect:/login";
+        }
+        return switch (userRepository.findByUsername(principal.getUsername())
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy người dùng"))
+                .getRole()) {
+            case STUDENT -> "redirect:/student/home";
+            case LECTURER -> "redirect:/lecturer/home";
+            case ADMIN -> "redirect:/admin/home";
+        };
+    }
+
+    @GetMapping("/dashboard")
     public String dashboard(@AuthenticationPrincipal CurrentUserDetails principal, Model model) {
         UserAccount user = userRepository.findWithDepartmentAndProfileByUsername(principal.getUsername())
                 .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy người dùng"));

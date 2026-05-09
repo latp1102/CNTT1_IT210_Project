@@ -82,9 +82,9 @@ public class AuthController {
                 .map(authority -> authority.substring("ROLE_".length()))
                 .findFirst()
                 .map(role -> switch (role) {
-                    case "STUDENT" -> "/";
-                    case "LECTURER" -> "/lecturer/sessions";
-                    case "ADMIN" -> "/admin/equipments";
+                    case "STUDENT" -> "/student/home";
+                    case "LECTURER" -> "/lecturer/home";
+                    case "ADMIN" -> "/admin/home";
                     default -> "/dashboard";
                 })
                 .orElse("/dashboard");
