@@ -37,7 +37,6 @@ public class EvaluationService {
     @Transactional
     public void evaluateSession(Long lecturerId, EvaluationForm form) {
         MentoringSession session = mentoringSessionService.getPendingSessionForLecturer(lecturerId, form.getSessionId());
-        // only allow evaluation when lecturer has confirmed the session
         if (session.getStatus() != MentoringSessionStatus.CONFIRMED) {
             throw new BusinessException("Lịch hẹn chưa được duyệt, không thể đánh giá");
         }

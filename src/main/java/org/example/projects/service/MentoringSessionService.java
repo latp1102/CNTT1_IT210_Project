@@ -8,12 +8,12 @@ import org.example.projects.dto.BookingForm;
 import org.example.projects.dto.BorrowingDetailView;
 import org.example.projects.dto.PendingSessionDto;
 import org.example.projects.dto.SessionHistoryDto;
-import org.example.projects.entity.AcademicEvaluation;
+// import org.example.projects.entity.AcademicEvaluation;
 import org.example.projects.entity.BorrowingDetail;
-import org.example.projects.entity.BorrowingRecord;
-import org.example.projects.entity.BorrowingRecordStatus;
-import org.example.projects.entity.Department;
-import org.example.projects.entity.Equipment;
+// import org.example.projects.entity.BorrowingRecord;
+// import org.example.projects.entity.BorrowingRecordStatus;
+// import org.example.projects.entity.Department;
+// import org.example.projects.entity.Equipment;
 import org.example.projects.entity.MentoringSession;
 import org.example.projects.entity.MentoringSessionStatus;
 import org.example.projects.entity.UserAccount;
@@ -23,7 +23,7 @@ import org.example.projects.exception.BusinessException;
 import org.example.projects.repository.AcademicEvaluationRepository;
 import org.example.projects.repository.BorrowingDetailRepository;
 import org.example.projects.repository.BorrowingRecordRepository;
-import org.example.projects.repository.EquipmentRepository;
+// import org.example.projects.repository.EquipmentRepository;
 import org.example.projects.repository.MentoringSessionRepository;
 import org.example.projects.repository.UserRepository;
 import org.springframework.stereotype.Service;
@@ -40,7 +40,7 @@ public class MentoringSessionService {
     private final AcademicEvaluationRepository evaluationRepository;
     private final BorrowingRecordRepository borrowingRecordRepository;
     private final BorrowingDetailRepository borrowingDetailRepository;
-    private final EquipmentRepository equipmentRepository;
+    // private final EquipmentRepository equipmentRepository;
 
     @Transactional
     public MentoringSession bookSession(Long studentId, BookingForm form) {
@@ -195,4 +195,3 @@ public class MentoringSessionService {
         return user.getUsername();
     }
 }
-

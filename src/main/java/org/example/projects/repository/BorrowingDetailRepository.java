@@ -8,5 +8,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface BorrowingDetailRepository extends JpaRepository<BorrowingDetail, Long> {
 
     List<BorrowingDetail> findByRecordId(Long recordId);
+    List<BorrowingDetail> findByEquipmentId(Long equipmentId);
 }
-

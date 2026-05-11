@@ -47,7 +47,17 @@ insert into users(id,username,password,role,enabled,department_id) values
 
 (5,'student2',
 '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
-'STUDENT',true,4);
+'STUDENT',true,4),
+
+-- Thêm giáo viên cho ngành Điện tử viễn thông (department_id = 2)
+(6,'lecturer3',
+'$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
+'LECTURER',true,2),
+
+-- Thêm giáo viên cho ngành Khoa học dữ liệu (department_id = 4)
+(7,'lecturer4',
+'$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
+'LECTURER',true,4);
 
 
 create table user_profiles(
@@ -143,4 +153,19 @@ insert into borrowing_details(record_id,equipment_id,quantity) values
 (1,2,1),
 (2,3,1),
 (2,4,1);
+
+SELECT * FROM borrowing_details;
+
+-- 2. Xem equipment nào đang được mượn
+SELECT e.id, e.name, e.quantity, COUNT(bd.id) as borrowing_count
+FROM equipments e
+         LEFT JOIN borrowing_details bd ON e.id = bd.equipment_id
+GROUP BY e.id, e.name, e.quantity
+HAVING COUNT(bd.id) > 0;
+
+DELETE FROM borrowing_details WHERE equipment_id = 1;
+
+SELECT * FROM borrowing_details;
+
+
 

@@ -34,4 +34,3 @@ public interface MentoringSessionRepository extends JpaRepository<MentoringSessi
             """)
     boolean existsConflict(@Param("lecturerId") Long lecturerId, @Param("sessionTime") LocalDateTime sessionTime);
 }
-
