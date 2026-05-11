@@ -25,10 +25,13 @@ public class SecurityConfig {
         http
             .csrf(Customizer.withDefaults())
             .authorizeHttpRequests(auth -> auth
+                 // cho phép truy cập công khai các tài nguyên tĩnh và trăng đky đnhap
                 .requestMatchers("/css/**", "/js/**", "/images/**", "/register", "/login", "/error").permitAll()
+                 // mình admin
                 .requestMatchers("/admin/**").hasRole("ADMIN")
                 .requestMatchers("/lecturer/**").hasRole("LECTURER")
                 .requestMatchers("/student/**").hasRole("STUDENT")
+                // xác thực
                 .requestMatchers("/dashboard", "/profile/**").authenticated()
                 .anyRequest().authenticated()
             )

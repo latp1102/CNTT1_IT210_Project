@@ -19,8 +19,7 @@ public class LoginFormValidator implements Validator {
         
         String username = loginForm.getUsername();
         String password = loginForm.getPassword();
-        
-        // Validate username
+
         if (username == null || username.trim().isEmpty()) {
             errors.rejectValue("username", "username.empty", "Tên đăng nhập không được để trống");
         } else if (username.trim().length() < 3) {
@@ -28,8 +27,7 @@ public class LoginFormValidator implements Validator {
         } else if (username.trim().length() > 50) {
             errors.rejectValue("username", "username.too.long", "Tên đăng nhập không được vượt quá 50 ký tự");
         }
-        
-        // Validate password
+
         if (password == null || password.isEmpty()) {
             errors.rejectValue("password", "password.empty", "Mật khẩu không được để trống");
         } else if (password.length() < 6) {
@@ -37,8 +35,7 @@ public class LoginFormValidator implements Validator {
         } else if (password.length() > 100) {
             errors.rejectValue("password", "password.too.long", "Mật khẩu không được vượt quá 100 ký tự");
         }
-        
-        // Check for SQL injection patterns
+
         if (username != null && (username.toLowerCase().contains("drop") || 
             username.toLowerCase().contains("delete") || 
             username.toLowerCase().contains("insert") || 

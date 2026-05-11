@@ -38,6 +38,10 @@ public class UserService {
         if (userRepository.findByProfileEmail(normalizedEmail).isPresent()) {
             throw new BusinessException("Email đã được sử dụng");
         }
+        if (form.getPhone() != null && !form.getPhone().trim().isEmpty() 
+                && userRepository.findByProfilePhone(form.getPhone().trim()).isPresent()) {
+            throw new BusinessException("Số điện thoại đã được sử dụng");
+        }
         Department department = departmentRepository.findById(form.getDepartmentId())
                 .orElseThrow(() -> new BusinessException("Khoa/ngành không hợp lệ"));
 

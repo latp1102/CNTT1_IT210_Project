@@ -7,6 +7,7 @@ import org.example.projects.dto.RegistrationForm;
 import org.example.projects.exception.BusinessException;
 import org.example.projects.service.LookupService;
 import org.example.projects.service.UserService;
+import org.example.projects.validation.RegistrationFormValidator;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -35,6 +36,7 @@ public class AuthController {
     private final UserService userService;
     private final LookupService lookupService;
     private final AuthenticationConfiguration authenticationConfiguration;
+    private final RegistrationFormValidator registrationFormValidator;
 
     @GetMapping("/login")
     public String login(Model model) {
@@ -98,10 +100,13 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public String doRegister(@Valid @ModelAttribute("registrationForm") RegistrationForm form,
+    public String doRegister(@ModelAttribute("registrationForm") RegistrationForm form,
                              BindingResult bindingResult,
                              Model model,
                              RedirectAttributes redirectAttributes) {
+        // Custom validation
+        registrationFormValidator.validate(form, bindingResult);
+        
         if (!form.getPassword().equals(form.getConfirmPassword())) {
             bindingResult.rejectValue("confirmPassword", "mismatch", "Mật khẩu xác nhận không khớp");
         }

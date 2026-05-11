@@ -21,7 +21,7 @@ public class RegistrationForm {
     @Size(min = 6, max = 100, message = "Mật khẩu phải từ 6-100 ký tự")
     private String password;
 
-    @NotBlank
+    @NotBlank(message = "Xác nhận mật khẩu không được để trống")
     private String confirmPassword;
 
     @NotBlank(message = "Tên đầy đủ không được để trống")
@@ -34,7 +34,7 @@ public class RegistrationForm {
     private String email;
 
     @NotBlank(message = "Số điện thoại không được để trống")
-    @Size(max = 20, message = "Số điện thoại không được vượt quá 20 ký tự")
+    @Size(max = 10, message = "Số điện thoại không được vượt quá 10 ký tự")
     private String phone;
 
     @NotNull(message = "Phòng ban không được để trống")
