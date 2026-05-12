@@ -28,6 +28,11 @@ public class InventoryService {
         return borrowingRecordRepository.findByStatus(BorrowingRecordStatus.PENDING_ISSUE);
     }
 
+    @Transactional(readOnly = true)
+    public List<BorrowingRecord> getIssuedRecords() {
+        return borrowingRecordRepository.findByStatus(BorrowingRecordStatus.ISSUED);
+    }
+
     @Transactional
     public void confirmIssue(Long recordId) {
         BorrowingRecord record = borrowingRecordRepository.findById(recordId)
@@ -53,6 +58,26 @@ public class InventoryService {
         }
 
         record.setStatus(BorrowingRecordStatus.ISSUED);
+        borrowingRecordRepository.save(record);
+    }
+
+    @Transactional
+    public void returnEquipment(Long recordId) {
+        BorrowingRecord record = borrowingRecordRepository.findById(recordId)
+                .orElseThrow(() -> new BusinessException("Không tìm thấy phiếu mượn"));
+        if (record.getStatus() != BorrowingRecordStatus.ISSUED) {
+            throw new BusinessException("Chỉ có thể trả thiết bị cho phiếu đã xuất kho");
+        }
+
+        List<BorrowingDetail> details = borrowingDetailRepository.findByRecordId(recordId);
+        for (BorrowingDetail detail : details) {
+            Equipment equipment = equipmentRepository.findById(detail.getEquipment().getId())
+                    .orElseThrow(() -> new BusinessException("Không tìm thấy thiết bị"));
+            equipment.setQuantity(equipment.getQuantity() + detail.getQuantity());
+            equipmentRepository.save(equipment);
+        }
+
+        record.setStatus(BorrowingRecordStatus.RETURNED);
         borrowingRecordRepository.save(record);
     }
 }

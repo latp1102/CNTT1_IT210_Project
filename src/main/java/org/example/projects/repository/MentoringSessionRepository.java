@@ -4,12 +4,14 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import org.example.projects.dto.LecturerStatsDto;
 import org.example.projects.entity.MentoringSession;
 import org.example.projects.entity.MentoringSessionStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.data.domain.Pageable;
 
 public interface MentoringSessionRepository extends JpaRepository<MentoringSession, Long> {
 
@@ -33,4 +35,22 @@ public interface MentoringSessionRepository extends JpaRepository<MentoringSessi
               and ms.status <> org.example.projects.entity.MentoringSessionStatus.CANCELED
             """)
     boolean existsConflict(@Param("lecturerId") Long lecturerId, @Param("sessionTime") LocalDateTime sessionTime);
+
+    @Query("""
+            SELECT new org.example.projects.dto.LecturerStatsDto(
+                ms.lecturer.id,
+                ms.lecturer.profile.fullName,
+                ms.lecturer.department.name,
+                COUNT(ms)
+            )
+            FROM MentoringSession ms
+            WHERE ms.status = :status
+            GROUP BY ms.lecturer.id, ms.lecturer.profile.fullName, ms.lecturer.department.name
+            ORDER BY COUNT(ms) DESC
+            """)
+    List<LecturerStatsDto> findLecturerStats(@Param("status") MentoringSessionStatus status, Pageable pageable);
+
+    default List<LecturerStatsDto> findLecturerStats(Pageable pageable) {
+        return findLecturerStats(MentoringSessionStatus.COMPLETED, pageable);
+    }
 }

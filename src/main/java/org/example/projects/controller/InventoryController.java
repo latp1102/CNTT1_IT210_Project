@@ -21,7 +21,8 @@ public class InventoryController {
 
     @GetMapping
     public String pendingIssue(Model model) {
-        model.addAttribute("records", inventoryService.getPendingIssueRecords());
+        model.addAttribute("pendingRecords", inventoryService.getPendingIssueRecords());
+        model.addAttribute("issuedRecords", inventoryService.getIssuedRecords());
         return "admin/inventory-list";
     }
 
@@ -30,6 +31,17 @@ public class InventoryController {
         try {
             inventoryService.confirmIssue(recordId);
             redirectAttributes.addFlashAttribute("success", "Đã xác nhận xuất kho");
+        } catch (BusinessException ex) {
+            redirectAttributes.addFlashAttribute("error", ex.getMessage());
+        }
+        return "redirect:/admin/inventory";
+    }
+
+    @PostMapping("/{recordId}/return")
+    public String returnEquipment(@PathVariable Long recordId, RedirectAttributes redirectAttributes) {
+        try {
+            inventoryService.returnEquipment(recordId);
+            redirectAttributes.addFlashAttribute("success", "Đã xác nhận trả thiết bị");
         } catch (BusinessException ex) {
             redirectAttributes.addFlashAttribute("error", ex.getMessage());
         }

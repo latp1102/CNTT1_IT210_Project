@@ -1,19 +1,19 @@
-// package org.example.projects.dto;
+ package org.example.projects.dto;
 
-// import lombok.AllArgsConstructor;
-// import lombok.Getter;
-// import lombok.NoArgsConstructor;
-// import lombok.Setter;
+ import lombok.AllArgsConstructor;
+ import lombok.Getter;
+ import lombok.NoArgsConstructor;
+ import lombok.Setter;
 
-// @Getter
-// @Setter
-// @NoArgsConstructor
-// @AllArgsConstructor
-// public class LecturerStatsDto {
+ @Getter
+ @Setter
+ @NoArgsConstructor
+ @AllArgsConstructor
+ public class LecturerStatsDto {
 
-//     private Long lecturerId;
-//     private String lecturerName;
-//     private String departmentName;
-//     private Long sessionCount;
-// }
+     private Long lecturerId;
+     private String lecturerName;
+     private String departmentName;
+     private Long sessionCount;
+ }
 

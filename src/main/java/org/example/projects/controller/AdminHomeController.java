@@ -3,6 +3,7 @@ package org.example.projects.controller;
 import org.example.projects.entity.UserAccount;
 import org.example.projects.repository.UserRepository;
 import org.example.projects.security.CurrentUserDetails;
+import org.example.projects.service.StatisticsService;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 public class AdminHomeController {
 
     private final UserRepository userRepository;
+    private final StatisticsService statisticsService;
 
     @GetMapping("/home")
     public String home(@AuthenticationPrincipal CurrentUserDetails principal, Model model) {
@@ -24,5 +26,15 @@ public class AdminHomeController {
                 .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy người dùng"));
         model.addAttribute("currentUser", user);
         return "admin/home";
+    }
+
+    @GetMapping("/statistics")
+    public String statistics(Model model) {
+        model.addAttribute("totalBorrowingQuantity", statisticsService.getTotalBorrowingQuantity());
+        model.addAttribute("pendingIssueRecords", statisticsService.countPendingIssueRecords());
+        model.addAttribute("issuedRecords", statisticsService.countIssuedRecords());
+        model.addAttribute("returnedRecords", statisticsService.countReturnedRecords());
+        model.addAttribute("topLecturers", statisticsService.topLecturers());
+        return "admin/statistics";
     }
 }
